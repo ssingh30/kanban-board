@@ -1,0 +1,36 @@
+.title{
+  color:white;
+  text-align:center;
+  height:30px;
+}
+.input{
+  display:flex;
+}
+body{
+  display:flex;
+}
+textarea{
+  width:100%;
+}
+.kboardstyle{
+  margin:15px;
+}
+.toDoStyle{
+  display:flex;
+  background: grey;
+}
+.eachToDo{
+  width:100%;
+  text-align:center;
+}
+.undoStyle{
+  height: 100px;
+  width:100px;
+}
+.undo{
+  height:100px;
+  width: 100px;
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+}

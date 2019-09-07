@@ -1,0 +1,118 @@
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+</head>
+<link rel="stylesheet" href = "kanban.css">
+<body>
+  <button class="undo">Undo</button>
+  <script>
+const body = document.querySelector('body'); 
+const allStorage = JSON.parse(localStorage.getItem('key'))||[[],[],[],[]];
+const toDoTracker = [];
+const undoButton = document.querySelector('.undo');
+undoButton.onclick=()=>{
+  const mostRecent =  toDoTracker.pop();
+  if(mostRecent.action == "add"){
+    index = mostRecent.index;
+    allStorage[index].pop();
+    allBoard[index].update();
+  }
+ if(mostRecent.action == "delete"){
+    allStorage[mostRecent.index].push(mostRecent.data);
+    allBoard[mostRecent.index].update();
+  };
+  if(mostRecent.action == "moveright"){
+    index = mostRecent.index;
+    allStorage[index].push(mostRecent.data);
+    allStorage[index+1].pop();
+    allBoard[index].update();
+    allBoard[index+1].update();
+  };
+  if(mostRecent.action == "moveLeft"){
+    index = mostRecent.index;
+    allStorage[index].push(mostRecent.data);
+    allStorage[index-1].pop();
+    allBoard[index].update();
+    allBoard[index-1].update(); 
+  };
+};
+function CreateBoard(title, color, index){
+  this.add=(textIn)=>{
+    allStorage[index].push(textIn);
+    localStorage.setItem('key', JSON.stringify(allStorage));
+    this.update();
+    toDoTracker.push({action:"add", index:index, data: textIn});
+  }
+this.update=()=>{
+    toDoList.innerHTML="";
+    allStorage[index].forEach((eachToDo)=>{
+      const toDo = document.createElement('div');
+      toDo.classList.add('toDoStyle');
+      toDoList.appendChild(toDo);
+      const lArrow = (index == 0)? '': ' <div class="arrowL">&lt</div>'
+        const rArrow = (index == 3)? '': ' <div class="arrowR">&gt</div>'
+        toDo.innerHTML=`
+        ${lArrow}
+      <div class="eachToDo">${eachToDo}</div>
+        ${rArrow}
+      `;
+    });
+    const lArrows = kboard.querySelectorAll('.arrowL');
+    const rArrows = kboard.querySelectorAll('.arrowR');
+    const eachToDo = kboard.querySelectorAll('.eachToDo');
+    eachToDo.forEach((task,i)=>{
+      task.onclick=()=>{
+        if(confirm("Do you want to delete?")){
+          toDoTracker.push({action:"delete", index: index, data: allStorage[index][i]});
+          allStorage[index].splice(i,1);
+          this.update();
+        };
+        return;
+      }
+    });
+    lArrows.forEach((arrow,i)=>{
+      arrow.onclick=()=>{
+        toDoTracker.push({action:"moveLeft", index:index, data:allStorage[index][i]  });
+        allStorage[index-1].push(allStorage[index][i]);
+        allStorage[index].splice(i,1);
+        this.update();
+        allBoard[index-1].update();
+      };
+    });
+    rArrows.forEach((arrow,i)=>{
+      arrow.onclick=()=>{
+        toDoTracker.push({action:"moveright", data:allStorage[index][i], index:index});
+        allStorage[index+1].push(allStorage[index][i]);
+        allStorage[index].splice(i,1);
+        this.update();
+        allBoard[index+1].update();
+      }
+    });
+  };
+  const kboard = document.createElement('div');
+  kboard.classList.add('kboardstyle');
+  body.appendChild(kboard);
+  kboard.innerHTML = `
+    <div class="title" style="background-color:${color}">${title}</div>
+    <div class="toDoList"></div>
+    <div class="input">
+    <textarea class="textEntered"></textarea>
+    <button class="submit">Submit</button>
+    </div>
+    `
+    const button = kboard.querySelector('.submit');
+  const textIn = kboard.querySelector('.textEntered');
+  const toDoList = kboard.querySelector('.toDoList');
+  button.onclick=()=>{
+    this.add(textIn.value);
+  };
+};
+const allBoard = [
+  new CreateBoard("toDo","red",0),
+  new CreateBoard("doing", "purple",1),
+  new CreateBoard("done","brown",2),
+  new CreateBoard("really done", "yellow",3)
+];
+  </script>
+</body>
+</html>
